@@ -227,7 +227,7 @@
         customer_email: document.getElementById("customer_email").value
       };
 
-      const response = await fetch("YOUR_N8N_WEBHOOK_URL_HERE", {
+      const response = await fetch("https://astutearc7.app.n8n.cloud/webhook/lastcall-bid", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
