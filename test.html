@@ -181,6 +181,7 @@
     <input type="text" id="invoice_number" value="LC-2025-1178" required />
 
     <h2>Project & Payment Info</h2>
+
     <label for="salesperson">Salesperson Name:</label>
     <input type="text" id="salesperson" value="Dennis Call" required />
 
@@ -188,7 +189,7 @@
     <input type="text" id="job" value="Kitchen Remodel – 2290 Maple Ridge Ct, Tampa FL" required />
 
     <label for="payment_terms"><strong>Payment Terms:</strong></label>
-    <textarea id="payment_terms" rows="2">50% deposit required before work begins. Weekly progress payments due every Friday. Final amount due upon project completion and walk-through approval.</textarea>
+    <textarea id="payment_terms" rows="2">50% deposit required before work begins. Weekly progress payments due every Friday. Final amount due upon project completion.</textarea>
 
     <label for="approx_weeks">Approximate Working Weeks:</label>
     <input type="number" id="approx_weeks" min="1" value="5" required />
@@ -201,7 +202,7 @@
     <div id="lineItemsContainer"></div>
 
     <h2>Contingency (10%)</h2>
-    <textarea id="contingency_coverage" rows="3">Covers miscellaneous materials, unexpected repairs, hardware replacements, drywall patching, plumbing seals, electrical connectors, and minor fixture adjustments.</textarea>
+    <textarea id="contingency_coverage" rows="3">Covers miscellaneous materials, unexpected repairs, hardware replacements, drywall patching, plumbing seals, tile work, and fixture adjustments.</textarea>
     <p><strong>CONTINGENCY FUNDS NOT UTILIZED WILL BE RETURNED TO THE CUSTOMER.</strong></p>
 
     <h2>Totals & Payment</h2>
@@ -219,6 +220,7 @@
     <input type="text" id="final_amount_due" class="money-input" value="$1875" />
 
     <h2>Customer Info</h2>
+
     <label for="customer_name">Customer Name:</label>
     <input type="text" id="customer_name" value="Michael Thompson" required />
 
@@ -250,7 +252,90 @@
     const count = parseInt(document.getElementById("num_line_items").value);
     if (!count || count < 1) return alert("Enter a valid number of line items.");
 
+    // ============================
+    // PREDEFINED TEST DATA OPTIONS
+    // ============================
+    const testData = {
+      2: [
+        {
+          trade: "Plumbing",
+          scope: `- Disconnect old plumbing
+- Install new PEX water lines
+- Replace garbage disposal
+- Install new shutoff valves`,
+          total: "$5200"
+        },
+        {
+          trade: "Drywall",
+          scope: `- Remove damaged drywall
+- Install new 1/2" drywall
+- Tape and mud seams
+- Sand and prep for paint`,
+          total: "$4100"
+        }
+      ],
+
+      3: [
+        {
+          trade: "Electrical",
+          scope: `- Add recessed lighting
+- Install two GFCI outlets
+- Replace breaker for kitchen circuit`,
+          total: "$2600"
+        },
+        {
+          trade: "Flooring",
+          scope: `- Remove old tile
+- Install new LVP flooring
+- Add new baseboards`,
+          total: "$4800"
+        },
+        {
+          trade: "Painting",
+          scope: `- Prime all walls
+- Apply two coats interior paint
+- Paint trim and baseboards`,
+          total: "$2300"
+        }
+      ],
+
+      4: [
+        {
+          trade: "Demolition",
+          scope: `- Remove cabinetry
+- Remove countertops
+- Dispose of debris`,
+          total: "$1800"
+        },
+        {
+          trade: "Cabinet Installation",
+          scope: `- Install RTA cabinets
+- Level and secure bases
+- Hang uppers`,
+          total: "$6200"
+        },
+        {
+          trade: "Countertops",
+          scope: `- Template for quartz slabs
+- Install quartz countertops
+- Seal and finish`,
+          total: "$5400"
+        },
+        {
+          trade: "Backsplash",
+          scope: `- Install subway tile
+- Apply grout
+- Seal tile and grout`,
+          total: "$2200"
+        }
+      ]
+    };
+
+    const dataSet = testData[count] || null;
+
     for (let i = 1; i <= count; i++) {
+      const item = dataSet ? dataSet[i - 1] : null;
+
       const div = document.createElement("div");
       div.classList.add("line-item");
 
@@ -258,28 +343,19 @@
         <h3>${i} LINE ITEM</h3>
 
         <label>Trade Name:</label>
-        <input type="text" name="trade_${i}" value="${i === 1 ? "Plumbing" : "Drywall"}" required />
+        <input type="text" name="trade_${i}" value="${item ? item.trade : ""}" required />
 
         <label>Scope of Work (one per line):</label>
-        <textarea class="scope-input" name="scope_${i}" required>${i === 1 ? 
-`- Disconnect existing sink plumbing
-- Install new PVC drainage
-- Replace kitchen faucet
-- Seal and pressure-test all connections` :
-`- Remove damaged drywall sections
-- Install new 1/2\" drywall
-- Tape, mud, and sand
-- Prep and smooth for painting`
-}</textarea>
+        <textarea class="scope-input" name="scope_${i}" required>${item ? item.scope : ""}</textarea>
 
         <label>Material and Labor Included?</label>
         <select name="mat_labor_${i}">
-          <option value="Yes" selected>Yes</option>
+          <option value="Yes">Yes</option>
           <option value="No">No</option>
         </select>
 
         <label>Line Total ($):</label>
-        <input type="text" name="line_total_${i}" class="money-input" value="${i === 1 ? "$5400" : "$6800"}" required />
+        <input type="text" name="line_total_${i}" class="money-input" value="${item ? item.total : ""}" required />
       `;
 
       container.appendChild(div);
@@ -291,16 +367,13 @@
   ------------------------------*/
   function formatMoneyDisplay(el) {
     let raw = el.value.replace(/[^0-9.]/g, "");
-
     if (raw === "") {
       el.value = "";
       return;
     }
-
     const hasDecimals = raw.includes(".");
     let num = parseFloat(raw);
     if (isNaN(num)) num = 0;
-
     if (hasDecimals) {
       el.value = "$" + num.toString();
     } else {
@@ -386,6 +459,7 @@
       alert("⚠️ Network error — nothing was erased.\nTry again once you're connected.");
     }
   });
+
 </script>
 
 </body>
